@@ -1,0 +1,11 @@
+{
+  "extends": ["../.eslintrc.json", "plugin:@nestjs/recommended"],
+  "plugins": ["@nestjs"],
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@nestjs/controller-methods-should-be-public": "error",
+    "@nestjs/injectable-should-be-provided": "error"
+  }
+}

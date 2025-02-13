@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "private": true,
+  "main": "src/main.ts",
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "build:watch": "tsc -w",
+    "start": "node ./build/main.js",
+    "start:watch": "node --watch build/main.js",
+    "start:dev": "concurrently \"npm run build:watch\" \"npm run watch:start\""
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.9",
+    "@nestjs/core": "^11.0.9",
+    "@nestjs/platform-fastify": "^11.0.9",
+    "fastify": "^5.2.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "trustedDependencies": [
+    "@nestjs/core"
+  ],
+  "devDependencies": {
+    "eslint-plugin-nestjs": "^1.2.3"
+  }
+}
