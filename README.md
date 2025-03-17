@@ -1,6 +1,6 @@
 # Drone Delivery Simulator
 
-A **web or mobile application** that simulates a drone delivery system. This project demonstrates an interactive platform where users can place delivery orders, track drone movement in real-time, and explore an administrator's interface for managing the drone fleet.
+A **web application** that simulates a drone delivery system. This project demonstrates an interactive platform where users can place delivery orders, track drone movement in real-time, and explore an administrator's interface for managing the drone fleet.
 
 ## Features
 
@@ -14,14 +14,7 @@ A **web or mobile application** that simulates a drone delivery system. This pro
 
 ## Technology Stack
 
-- **Frontend**: [React/Angular/Vue.js] (depending on your choice)
-- **Backend**: [Node.js/Django/Flask]
-- **Database**: [PostgreSQL/MongoDB]
-- **Mapping**: [Leaflet.js/Google Maps API]
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/drone-delivery-simulator.git
-   ```
+- **Frontend**: [Next.js]
+- **Backend**: [Nest.js]
+- **Database**: [PostgreSQL]
+- **Mapping**: []
