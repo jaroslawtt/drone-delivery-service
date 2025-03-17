@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+* {
+  @apply box-border;
+}
+
+body {
+  @apply flex flex-col min-w-[320px] min-h-screen text-sm leading-normal m-0;
+}
+
+#root {
+  @apply flex grow flex-col;
+}

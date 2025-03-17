@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ESNext",
+    "sourceMap": true,
+    "outDir": "build",
+    "incremental": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "drizzle.config.ts"],
+  "files": ["src/main.d.ts"],
+  "exclude": ["node_modules"],
+  "extends": "../tsconfig.json"
+}

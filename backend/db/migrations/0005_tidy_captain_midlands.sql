@@ -1,0 +1,1 @@
+CREATE TYPE "public"."order_status" AS ENUM('created', 'processing', 'in_transit', 'delivered', 'cancelled');
