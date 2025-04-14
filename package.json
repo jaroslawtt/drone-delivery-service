@@ -1,0 +1,39 @@
+{
+  "name": "habit-tracker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A full-stack web application (NestJS backend, Angular frontend) designed to help users build positive habits through gamification. Track progress, earn rewards, and achieve your goals!",
+  "main": "index.js",
+  "scripts": {
+    "prettify": "prettier --write \"**/*.{ts, js, json,md}\"",
+    "build:backend": "cd backend && npm run build",
+    "lint": "eslint \"**/*.{ts,tsx}\" --fix",
+    "lint:type": "npm run lint:type --workspaces --if-present",
+    "lint:js": "npm run lint:js --workspaces --if-present -- --max-warnings=0"
+  },
+  "author": "jaroslawqq",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.2",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "3.5.1",
+    "tsc-alias": "^1.8.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "dependencies": {
+    "zod": "^3.24.2"
+  }
+}
