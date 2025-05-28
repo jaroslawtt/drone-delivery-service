@@ -3,12 +3,12 @@ import { OrderStatus } from "../enums/enums.js";
 
 type OrderCreateResponseDto = {
   id: number;
-  clientId: number;
+  clientId: number | null;
   amount: string;
   weight: string;
   status: ValueOf<typeof OrderStatus>;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export { type OrderCreateResponseDto };

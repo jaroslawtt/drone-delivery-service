@@ -13,6 +13,22 @@ const orderCreate = z.object({
     .refine((val) => parseFloat(val) <= 1000, {
       message: OrderValidationMessage.WEIGHT_TO_BE_LESS_THAN_OR_EQUAL_TO_1000,
     }),
+  entryPoint: z.object({
+    longitude: z.string().refine((val) => !isNaN(parseFloat(val)), {
+      message: OrderValidationMessage.PROVIDE_VALIDE__COORDINATES,
+    }),
+    latitude: z.string().refine((val) => !isNaN(parseFloat(val)), {
+      message: OrderValidationMessage.PROVIDE_VALIDE__COORDINATES,
+    }),
+  }),
+  destination: z.object({
+    longitude: z.string().refine((val) => !isNaN(parseFloat(val)), {
+      message: OrderValidationMessage.PROVIDE_VALIDE__COORDINATES,
+    }),
+    latitude: z.string().refine((val) => !isNaN(parseFloat(val)), {
+      message: OrderValidationMessage.PROVIDE_VALIDE__COORDINATES,
+    }),
+  }),
 });
 
 export { orderCreate };

@@ -8,12 +8,20 @@ import {
 import { OrderEntity } from "./order.entity.js";
 import { OrderRepository } from "./order.repository.js";
 import { IService } from "~/libs/interfaces/interfaces.js";
+import { DroneService } from "../drones/drone.service.js";
+import { DroneStatus } from "../drones/libs/enums/enums.js";
+
 @Injectable()
 class OrderService implements Omit<IService, "findAll" | "find"> {
   private readonly orderRepository: OrderRepository;
+  private readonly droneService: DroneService;
 
-  public constructor(orderRepository: OrderRepository) {
+  public constructor(
+    orderRepository: OrderRepository,
+    droneService: DroneService,
+  ) {
     this.orderRepository = orderRepository;
+    this.droneService = droneService;
   }
 
   public async findById(orderId: Order["id"]) {
@@ -29,12 +37,26 @@ class OrderService implements Omit<IService, "findAll" | "find"> {
   public async findByClientId(clientId: Order["clientId"]) {
     const orders = await this.orderRepository.findByClientId(clientId);
 
-    return orders.map((order) => order.toObject());
+    return orders.map((order) => ({
+      ...order.toObject(),
+      destination: order.destinationData,
+      entryPoint: order.entryPointData,
+    }));
   }
 
   public async create(payload: OrderCreate) {
-    const { weight, clientId } = payload;
+    const { weight, clientId, destination, entryPoint } = payload;
     const amount = this.calculateAmount({ weight });
+
+    const drones = await this.droneService.find({
+      orderId: null,
+    });
+
+    if (drones.length === 0) {
+      throw new Error("No drones available");
+    }
+
+    const droneToDeliverOrder = drones.shift();
 
     const order = await this.orderRepository.create(
       OrderEntity.initializeNew({
@@ -42,14 +64,29 @@ class OrderService implements Omit<IService, "findAll" | "find"> {
         clientId,
         amount,
         status: OrderStatus.CREATED,
+        droneId: droneToDeliverOrder!.id,
+        destination,
+        entryPoint,
       }),
     );
 
-    return order.toObject();
+    if (droneToDeliverOrder!.status === DroneStatus.OFFLINE) {
+      await this.droneService.update(droneToDeliverOrder!.id, {
+        status: DroneStatus.ONLINE,
+        batteryLevel: droneToDeliverOrder!.batteryLevel,
+        serialNumber: droneToDeliverOrder!.serialNumber,
+      });
+    }
+
+    return {
+      ...order.toObject(),
+      destination: order.destinationData,
+      entryPoint: order.entryPointData,
+    };
   }
 
   public async update(orderId: Order["id"], payload: OrderUpdate) {
-    const { amount, clientId, status, weight } = payload;
+    const { amount, clientId, status, weight, droneId } = payload;
 
     const order = await this.orderRepository.update(
       OrderEntity.initialize({
@@ -58,12 +95,29 @@ class OrderService implements Omit<IService, "findAll" | "find"> {
         clientId,
         status,
         weight,
+        droneId,
+        destination: null,
+        entryPoint: null,
         createdAt: null,
         updatedAt: null,
       }),
     );
 
     return order.toObject();
+  }
+
+  public async findByDroneId(droneId: Order["droneId"]) {
+    const order = await this.orderRepository.findByDroneId(droneId);
+
+    if (!order) {
+      return null;
+    }
+
+    return {
+      ...order.toObject(),
+      destination: order.destinationData,
+      entryPoint: order.entryPointData,
+    };
   }
 
   public async delete(orderId: Order["id"]) {

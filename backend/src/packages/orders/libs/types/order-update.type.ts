@@ -1,5 +1,8 @@
-import { Order } from "./order.type";
+import { type Order } from "./order.type.js";
 
-type OrderUpdate = Omit<Order, "createdAt" | "updatedAt" | "id">;
+type OrderUpdate = Omit<
+  Order,
+  "createdAt" | "updatedAt" | "id" | "entryPointId" | "destinationId"
+>;
 
 export { OrderUpdate };

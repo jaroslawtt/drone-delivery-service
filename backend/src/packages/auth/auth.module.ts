@@ -9,7 +9,7 @@ import { UserModule } from "~/packages/users/users.js";
   imports: [UserModule],
   controllers: [AuthController],
   providers: [AuthService, Token, Encrypt],
-  exports: [Token],
+  exports: [Token, Encrypt],
 })
 class AuthModule {}
 

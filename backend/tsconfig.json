@@ -22,7 +22,7 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src", "drizzle.config.ts"],
+  "include": ["src", "drizzle.config.ts", "db/seeds/seeds.ts"],
   "files": ["src/main.d.ts"],
   "exclude": ["node_modules"],
   "extends": "../tsconfig.json"

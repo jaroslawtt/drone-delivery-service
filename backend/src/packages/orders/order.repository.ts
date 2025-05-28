@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { type Order } from "./libs/types/types.js";
 import { OrderEntity } from "./order.entity.js";
 import { IRepository } from "~/libs/interfaces/repository.interface.js";
@@ -12,7 +12,7 @@ class OrderRepository
   implements Omit<IRepository, "findAll" | "find">
 {
   public async update(payload: OrderEntity): Promise<OrderEntity> {
-    const { id, amount, status, weight } = payload.toObject();
+    const { id, amount, status, weight, droneId } = payload.toObject();
 
     const [orderReturningColumns] = await this.database
       .update(relations.orders)
@@ -20,6 +20,7 @@ class OrderRepository
         amount,
         status,
         weight,
+        droneId,
       })
       .where(eq(relations.orders.id, id))
       .returning({
@@ -34,8 +35,11 @@ class OrderRepository
       amount,
       status,
       weight,
-      createdAt: orderReturningColumns!.createdAt!,
-      updatedAt: orderReturningColumns!.updatedAt,
+      droneId,
+      destination: null,
+      entryPoint: null,
+      createdAt: orderReturningColumns!.createdAt!.toISOString(),
+      updatedAt: orderReturningColumns!.updatedAt!.toISOString(),
     });
   }
 
@@ -48,6 +52,10 @@ class OrderRepository
   public async findById(orderId: Order["id"]): Promise<OrderEntity | null> {
     const order = await this.database.query.orders.findFirst({
       where: eq(relations.orders.id, orderId),
+      with: {
+        destination: true,
+        entryPoint: true,
+      },
     });
 
     if (!order) {
@@ -60,8 +68,11 @@ class OrderRepository
       amount: order.amount,
       status: order.status,
       weight: order.weight,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
+      droneId: order.droneId,
+      destination: order.destination,
+      entryPoint: order.entryPoint,
+      createdAt: order.createdAt!.toISOString(),
+      updatedAt: order.updatedAt!.toISOString(),
     });
   }
 
@@ -70,6 +81,10 @@ class OrderRepository
   ): Promise<OrderEntity[]> {
     const orders = await this.database.query.orders.findMany({
       where: eq(relations.orders.clientId, clientId),
+      with: {
+        destination: true,
+        entryPoint: true,
+      },
     });
 
     return orders.map((order) =>
@@ -79,41 +94,101 @@ class OrderRepository
         amount: order.amount,
         status: order.status,
         weight: order.weight,
-        createdAt: order.createdAt,
-        updatedAt: order.updatedAt,
+        destination: order.destination,
+        droneId: order.droneId,
+        entryPoint: order.entryPoint,
+        createdAt: order.createdAt!.toISOString(),
+        updatedAt: order.updatedAt!.toISOString(),
       }),
     );
   }
 
   public async create(payload: OrderEntity): Promise<OrderEntity> {
-    const { amount, clientId, status, weight } = payload.toNewObject();
+    const { amount, clientId, status, weight, droneId } = payload.toNewObject();
+    const entryPoint = payload.entryPointData;
+    const destination = payload.destinationData;
 
-    const [returnedOrderColumns] = await this.database
-      .insert(relations.orders)
-      .values({
-        amount,
-        clientId,
-        status,
-        weight,
-      })
-      .returning({
-        orderId: relations.orders.id,
-        createdAt: relations.orders.createdAt,
-        updatedAt: relations.orders.updatedAt,
-      });
+    const [returnedOrderColumns] = await this.database.transaction(
+      async (trx) => {
+        const [entryPointReturingObj, destinationReturingObj] = await trx
+          .insert(relations.map)
+          .values([
+            {
+              latitude: entryPoint.latitude,
+              longitude: entryPoint.longitude,
+            },
+            {
+              latitude: destination.latitude,
+              longitude: destination.longitude,
+            },
+          ])
+          .returning({
+            mapItemId: relations.map.id,
+          });
 
-    if (!returnedOrderColumns) {
-      throw new Error("Failed to create a new order");
-    }
+        return await trx
+          .insert(relations.orders)
+          .values({
+            amount,
+            clientId,
+            status,
+            weight,
+            droneId,
+            entryPointId: entryPointReturingObj!.mapItemId,
+            destinationId: destinationReturingObj!.mapItemId,
+          })
+          .returning({
+            orderId: relations.orders.id,
+            createdAt: relations.orders.createdAt,
+            updatedAt: relations.orders.updatedAt,
+          });
+      },
+    );
 
     return OrderEntity.initialize({
-      id: returnedOrderColumns.orderId,
+      id: returnedOrderColumns!.orderId,
       clientId,
       amount,
       status,
       weight,
-      createdAt: returnedOrderColumns.createdAt,
-      updatedAt: returnedOrderColumns.updatedAt,
+      droneId,
+      destination,
+      entryPoint,
+      createdAt: returnedOrderColumns!.createdAt!.toISOString(),
+      updatedAt: returnedOrderColumns!.updatedAt!.toISOString(),
+    });
+  }
+
+  public async findByDroneId(
+    droneId: Order["droneId"],
+  ): Promise<OrderEntity | null> {
+    if (!droneId) {
+      return null;
+    }
+
+    const order = await this.database.query.orders.findFirst({
+      where: eq(relations.orders.droneId, droneId),
+      with: {
+        destination: true,
+        entryPoint: true,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    return OrderEntity.initialize({
+      id: order.id,
+      clientId: order.clientId,
+      amount: order.amount,
+      status: order.status,
+      weight: order.weight,
+      destination: order.destination,
+      droneId: order.droneId,
+      entryPoint: order.entryPoint,
+      createdAt: order.createdAt!.toISOString(),
+      updatedAt: order.updatedAt!.toISOString(),
     });
   }
 }

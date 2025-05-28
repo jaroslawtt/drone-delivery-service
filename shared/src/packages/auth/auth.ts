@@ -1,7 +1,7 @@
 export { AuthApiPath } from "./libs/enums/enums.js";
 export {
   type AuthSignInRequestDto,
-  type AuthSignUpResponseDto,
+  type AuthSignUpResponseDto, 
   type AuthSignUpRequestDto,
   type AuthSignInResponseDto,
   type AuthGetCurrentResponseDto,

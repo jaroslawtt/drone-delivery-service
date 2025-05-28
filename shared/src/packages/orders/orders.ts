@@ -1,4 +1,4 @@
-export { OrderStatus } from "./libs/enums/enums.js";
+export { OrderStatus, OrdersApiPath } from "./libs/enums/enums.js";
 export {
   type OrderGetAllItemResponseDto,
   type OrderGetAllResponseDto,

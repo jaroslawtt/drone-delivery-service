@@ -38,8 +38,12 @@ class OrderController {
     @Body() orderCreateRequestDto: OrderCreateRequestDto,
     @GetUser() user: UserEntityPayload,
   ): Promise<OrderCreateResponseDto> {
+    const { weight, destination, entryPoint } = orderCreateRequestDto;
+
     const order = await this.orderService.create({
-      ...orderCreateRequestDto,
+      weight,
+      destination,
+      entryPoint,
       clientId: user.id,
     });
 

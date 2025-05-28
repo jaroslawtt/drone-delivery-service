@@ -115,8 +115,29 @@ class UserRepository
     return (await this.find(userId)) as UserEntity;
   }
 
-  public delete(): Promise<void> {
-    throw new Error("Method not implemented.");
+  public async updatePassword(payload: UserEntity): Promise<UserEntity> {
+    const { id: userId } = payload.toObject();
+    const { passwordHash, passwordSalt } = payload.privateData;
+
+    await this.database
+      .update(relations.users)
+      .set({
+        passwordHash,
+        passwordSalt,
+      })
+      .where(eq(relations.users.id, userId));
+
+    return (await this.find(userId)) as UserEntity;
+  }
+
+  public async delete(userId: User["id"]): Promise<void> {
+    return void (await this.database.transaction(async (trx) => {
+      await trx
+        .delete(relations.userDetails)
+        .where(eq(relations.userDetails.userId, userId));
+
+      await trx.delete(relations.users).where(eq(relations.users.id, userId));
+    }));
   }
 }
 

@@ -1,15 +1,30 @@
-import { Injectable } from "@nestjs/common";
-import { type UserUpdate, type UserCreate, User } from "./libs/types/types.js";
+import { HttpStatus, HttpException, Injectable } from "@nestjs/common";
+import {
+  type UserUpdate,
+  type UserCreate,
+  User,
+  UserUpdatePasswordDto,
+} from "./libs/types/types.js";
 import { UserEntity } from "./user.entity.js";
 import { UserRepository } from "./user.repository.js";
 import { IService } from "~/libs/interfaces/interfaces.js";
+import { Encrypt } from "~/libs/packages/encrypt/encrypt.js";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 class UserService implements Omit<IService, "findAll"> {
   private readonly userRepository: UserRepository;
+  private readonly encrypt: Encrypt;
+  private readonly configService: ConfigService;
 
-  public constructor(userRepository: UserRepository) {
+  public constructor(
+    userRepository: UserRepository,
+    encrypt: Encrypt,
+    configService: ConfigService,
+  ) {
     this.userRepository = userRepository;
+    this.encrypt = encrypt;
+    this.configService = configService;
   }
 
   public async create(payload: UserCreate) {
@@ -75,7 +90,44 @@ class UserService implements Omit<IService, "findAll"> {
     return user.toObject();
   }
 
-  public async delete() {}
+  public async delete(userId: User["id"]) {
+    return void (await this.userRepository.delete(userId));
+  }
+
+  public async changePassword(
+    userId: User["id"],
+    payload: UserUpdatePasswordDto,
+  ) {
+    const { password, repeatPassword } = payload;
+
+    if (password !== repeatPassword) {
+      throw new HttpException("Passwords do not match", HttpStatus.FORBIDDEN);
+    }
+
+    const user = await this.userRepository.find(userId);
+
+    if (!user) {
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }
+
+    const passwordSalt = await this.encrypt.generateSalt(
+      this.configService.get<number>("USER_PASSWORD_SALT_ROUNDS") as number,
+    );
+    const passwordHash = await this.encrypt.encrypt(password, passwordSalt);
+
+    await this.userRepository.updatePassword(
+      UserEntity.initialize({
+        id: userId,
+        passwordHash,
+        passwordSalt,
+        email: null,
+        firstName: null,
+        lastName: null,
+      }),
+    );
+
+    return user.toObject();
+  }
 }
 
 export { UserService };

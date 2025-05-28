@@ -19,6 +19,7 @@ import {
   ROUTE_BODY_VALIDATION_SCHEMA_KEY,
   ROUTE_PARAMS_VALIDATION_SCHEMA_KEY,
 } from "~/libs/packages/validation/validation.js";
+import { ConfigService } from "@nestjs/config";
 
 const bootstrap = async () => {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -31,8 +32,15 @@ const bootstrap = async () => {
       },
     }),
   );
+  const configService = app.get(ConfigService);
 
   app.setGlobalPrefix("api/v1/");
+  app.enableCors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    allowedHeaders: "Content-Type, Accept, Authorization",
+    credentials: true,
+  });
 
   app
     .getHttpAdapter()
@@ -87,9 +95,25 @@ const bootstrap = async () => {
   app.useLogger(app.get(Logger));
   app.register(fastifyCookie, {} as FastifyCookieOptions);
 
-  return void (await app.listen({
-    port: 3000,
-  }));
+  try {
+    console.log(
+      `Trying to start server on port ${configService.get("PORT") ?? 3001}...`,
+    );
+
+    await app.listen({
+      port: configService.get("PORT") ?? 3001,
+      host: "localhost",
+    });
+
+    return void console.log("server started");
+  } catch (error) {
+    console.log(`Trying to start server on port 5432...`);
+
+    return void (await app.listen({
+      port: 3001,
+      host: "localhost",
+    }));
+  }
 };
 
 bootstrap();

@@ -1,8 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { DroneEntity } from "./drone.entity.js";
 import { DroneRepository } from "./drone.repository.js";
-import { type DroneUpdateLocation, type Drone } from "./libs/types/types.js";
+import { type Drone, type DroneUpdate } from "./libs/types/types.js";
 import { IService } from "~/libs/interfaces/interfaces.js";
+import { DroneStatus } from "./libs/enums/enums.js";
+import { type ValueOf } from "~/libs/types/types.js";
+import { DroneEntity } from "./drone.entity.js";
+import { type Order } from "../orders/libs/types/types.js";
 
 @Injectable()
 class DroneService implements Pick<IService, "findAll"> {
@@ -18,39 +21,52 @@ class DroneService implements Pick<IService, "findAll"> {
     return drones.map((drone) => drone.toObject());
   }
 
-  public async updateLocation(payload: DroneUpdateLocation) {
-    const { id, latitude, longitude, altitude, speed } = payload;
-
-    const drone = await this.droneRepository.updateLocation(
-      DroneEntity.initialize({
-        id,
-        altitude,
-        latitude,
-        longitude,
-        speed,
-        batteryCapacity: null,
-        maxAltitude: null,
-        maxSpeed: null,
-        model: null,
-        serialNumber: null,
-        status: null,
-        weightCapacity: null,
-        createdAt: null,
-        updatedAt: null,
-      }),
-    );
-
-    return drone.toObject();
-  }
-
-  public async findLocation(droneId: Drone["id"]) {
-    const drone = await this.droneRepository.find(droneId);
+  public async findById(id: Drone["id"]) {
+    const drone = await this.droneRepository.findById(id);
 
     if (!drone) {
       return null;
     }
 
-    return drone.locationData;
+    return drone.toObject();
+  }
+
+  public async find(parameters: {
+    status?: ValueOf<typeof DroneStatus>;
+    orderId?: Order["id"] | null;
+  }) {
+    const drones = await this.droneRepository.find(parameters);
+
+    return drones.map((drone) => drone.toObject());
+  }
+
+  public async update(droneId: Drone["id"], payload: DroneUpdate) {
+    const { status, batteryLevel } = payload;
+
+    const drone = await this.droneRepository.update(
+      DroneEntity.initialize({
+        id: droneId,
+        status,
+        batteryLevel,
+        batteryCapacity: null,
+        maxAltitude: null,
+        maxSpeed: null,
+        model: null,
+        serialNumber: null,
+        weightCapacity: null,
+        orderId: null,
+        createdAt: null,
+        updatedAt: null,
+      }),
+    );
+
+    if (!drone) {
+      return null;
+    }
+  }
+
+  public async getDroneOrderDestination(droneId: Drone["id"]) {
+    return await this.droneRepository.getDroneOrderDestination(droneId);
   }
 }
 

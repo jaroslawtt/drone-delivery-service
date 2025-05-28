@@ -54,7 +54,7 @@ class AuthController {
 
     reply.setCookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: true,
       expires: new Date(
         Date.now() +
@@ -64,6 +64,7 @@ class AuthController {
             ) as StringValue,
           ),
       ),
+      path: "/",
     });
 
     return reply.send({
@@ -87,7 +88,7 @@ class AuthController {
 
     reply.setCookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: true,
       expires: new Date(
         Date.now() +
@@ -97,6 +98,7 @@ class AuthController {
             ) as StringValue,
           ),
       ),
+      path: "/",
     });
 
     return reply.send({

@@ -1,8 +1,8 @@
 {
-  "name": "habit-tracker",
+  "name": "drone-delivery",
   "version": "1.0.0",
   "type": "module",
-  "description": "A full-stack web application (NestJS backend, Angular frontend) designed to help users build positive habits through gamification. Track progress, earn rewards, and achieve your goals!",
+  "description": "Software platform for a drone delivery service. Includes flight simulation on a map, user application, and admin panel.",
   "main": "index.js",
   "scripts": {
     "prettify": "prettier --write \"**/*.{ts, js, json,md}\"",
