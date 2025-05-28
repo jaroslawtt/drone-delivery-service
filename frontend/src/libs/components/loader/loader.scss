@@ -1,0 +1,36 @@
+.loader {
+  @apply w-[70px] text-center mx-auto my-0;
+}
+.loader > div {
+  @apply w-[18px] h-[18px] bg-primary inline-block animate-[sk-bouncedelay_1.2s_infinite_ease-in-out_both] rounded-[100%];
+}
+.loader .bounce1 {
+  animation-delay: -0.32s;
+}
+.loader .bounce2 {
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}

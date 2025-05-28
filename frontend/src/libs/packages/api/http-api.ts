@@ -2,6 +2,7 @@ import { configureString } from "~/libs/helpers/helpers";
 import { IHttp } from "../http/libs/interfaces/interfaces";
 import { IHttpApi } from "./interfaces/http-api.interface";
 import { HttpApiOptions, HttpApiResponse } from "./types/types";
+import { StorageKey } from "../storage/storage";
 
 type Constructor = {
   baseUrl: string;
@@ -20,9 +21,9 @@ class HttpApi implements IHttpApi {
     path: string,
     options: HttpApiOptions,
   ): Promise<HttpApiResponse> {
-    const { method, payload = null } = options;
+    const { method, payload = null, hasAuth = false } = options;
 
-    const headers = await this.getHeaders();
+    const headers = await this.getHeaders(hasAuth);
 
     const response = await this.http.load(path, {
       method,
@@ -46,6 +47,10 @@ class HttpApi implements IHttpApi {
   protected getFullEndpoint<T extends Record<string, string>>(
     ...parameters: [...string[], T] | [...string[]]
   ): string {
+    const configureParams: [...string[], T] | Array<string> = [
+      this.baseUrl,
+      this.path,
+    ];
     const copiedParameters = [...parameters];
 
     const lastParam =
@@ -60,27 +65,39 @@ class HttpApi implements IHttpApi {
 
     if (!options && lastParam) {
       copiedParameters.push(lastParam as string);
+
+      return configureString(
+        ...configureParams,
+        ...(copiedParameters as string[]),
+      );
     }
 
     return configureString(
-      this.baseUrl,
-      this.path,
-      ...copiedParameters,
-      options,
+      ...([
+        ...configureParams,
+        ...copiedParameters,
+        ...(options ? [options] : []),
+      ] as [...string[], T]),
     );
   }
 
-  private async getHeaders(): Promise<Headers> {
+  private async getHeaders(hasAuth: boolean): Promise<Headers> {
     const headers = new Headers();
 
     headers.append("content-type", "application/json");
+
+    if (hasAuth) {
+      const token = window.localStorage.getItem(StorageKey.ACCESS_TOKEN);
+
+      headers.append("Authorization", `Bearer ${token ?? ""}`);
+    }
 
     return headers;
   }
 
   private async checkResponse(response: Response): Promise<Response | never> {
     if (!response.ok) {
-      console.log(response);
+      throw response.status;
     }
 
     return response;
