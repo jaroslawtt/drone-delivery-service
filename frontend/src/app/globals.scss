@@ -7,7 +7,7 @@
 }
 
 body {
-  @apply flex flex-col min-w-[320px] min-h-[100dvh] text-sm leading-normal m-0 font-source-sans;
+  @apply flex flex-col min-w-[320px] h-screen max-h-[100dvh] text-sm leading-normal m-0 font-source-sans;
 
   h1 {
     @apply text-[28px] leading-[34px];
@@ -134,7 +134,7 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overscroll-none;
   }
 }
 

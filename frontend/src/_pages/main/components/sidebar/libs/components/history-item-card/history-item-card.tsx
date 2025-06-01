@@ -86,7 +86,7 @@ const HistoryItemCard = ({
       </div>
       <div className="flex justify-between items-center">
         <div className="flex gap-x-2 items-center">
-          {amount} UAH
+          {amount} $
           <Banknote className="text-tertiary" />
         </div>
         <div

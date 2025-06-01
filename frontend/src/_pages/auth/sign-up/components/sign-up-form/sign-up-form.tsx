@@ -63,6 +63,7 @@ const SignUpForm: FC = () => {
         errors={errors}
       />
       <Input
+        type="password"
         label="Password"
         placeholder="Enter your password"
         name="password"

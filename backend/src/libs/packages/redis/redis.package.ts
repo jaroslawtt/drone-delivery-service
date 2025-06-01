@@ -14,13 +14,6 @@ const redisProvider: Provider = {
   ): Promise<RedisClientType | never> => {
     const host = configService.get<string>("REDIS_HOST");
     const port = configService.get<number>("REDIS_PORT");
-    const password = configService.get<string>("REDIS_PASSWORD") as string;
-
-    console.log("Redis config", {
-      host,
-      port,
-      password,
-    });
 
     const client = createClient({
       socket: {
@@ -28,7 +21,6 @@ const redisProvider: Provider = {
         port,
         tls: false,
       },
-      password,
     });
 
     client.on("error", (err) => logger.error(err));

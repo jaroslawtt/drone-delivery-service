@@ -7,9 +7,8 @@ import ApplePayLogo from "~/../public/svg/apple-pay-logo.svg";
 
 const PaymentMenu = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    "cash" | "apple-pay"
-  >("apple-pay");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<"apple-pay">("apple-pay");
 
   return (
     <>
@@ -37,12 +36,6 @@ const PaymentMenu = () => {
                 }
                 isSelected={selectedPaymentMethod === "apple-pay"}
                 onClick={() => setSelectedPaymentMethod("apple-pay")}
-              />
-              <PaymentMethod
-                label="Cash"
-                icon={<Banknote className="text-tertiary" />}
-                isSelected={selectedPaymentMethod === "cash"}
-                onClick={() => setSelectedPaymentMethod("cash")}
               />
             </div>
           </div>

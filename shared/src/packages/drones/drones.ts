@@ -3,4 +3,5 @@ export {
   type DroneLocation,
   type DroneGetAllItemResonseDto,
   type DroneWithLocationGetAllItemResponseDto,
+  type DroneGetAllResponseDto,
 } from "./libs/types/types.js";

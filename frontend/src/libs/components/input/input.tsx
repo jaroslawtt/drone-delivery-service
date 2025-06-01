@@ -13,6 +13,7 @@ import { geocoding } from "@maptiler/sdk";
 import { ScrollArea } from "~/libs/ui/scroll-area";
 import { debounce } from "~/libs/helpers/debounce";
 import { MapLocation } from "~/packages/map/libs/types/types";
+import { Eye, EyeOff } from "lucide-react";
 
 type Properties<T extends FieldValues> = {
   control: Control<T, null>;
@@ -40,6 +41,7 @@ const Input = <T extends FieldValues>({
     control,
     disabled: isDisabled,
   });
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [fetchQuery, setFetchQuery] = useState<string>("");
   const [locationName, setLocationName] = useState<string>("");
@@ -219,6 +221,7 @@ const Input = <T extends FieldValues>({
     className,
     {
       "border-red-500": hasError,
+      "pr-[36px]": type === "password",
     },
   );
 
@@ -229,11 +232,23 @@ const Input = <T extends FieldValues>({
       </span>
       <input
         {...field}
-        type={type}
+        type={
+          type === "password" ? (isPasswordVisible ? "text" : "password") : type
+        }
         className={validClassNames}
         placeholder={placeholder}
         disabled={isDisabled}
       />
+      {type === "password" && (
+        <button
+          type="button"
+          onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+          className="absolute right-[12px] top-1/2 -translate-y-1/2 transform text-gray-500 hover:text-gray-700 focus:outline-none"
+          tabIndex={-1}
+        >
+          {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      )}
       <span
         className={cnMerge(
           "ml-2 text-[12px] text-red-500 text-nowrap overflow-ellipsis",

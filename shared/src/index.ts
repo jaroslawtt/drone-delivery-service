@@ -38,6 +38,7 @@ export {
   type DroneLocation,
   type DroneGetAllItemResonseDto,
   type DroneWithLocationGetAllItemResponseDto,
+  type DroneGetAllResponseDto,
 } from "./packages/drones/drones.js";
 export {
   type MapGetAllItemReponseDto,
