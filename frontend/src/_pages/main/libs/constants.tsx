@@ -1,5 +1,5 @@
 import { type MapLocation } from "~/packages/map/libs/types/types";
-import { SummaryMenu, ServiveMenu } from "../components/components";
+// import { SummaryMenu, ServiveMenu } from "../components/components";
 
 const ORDER_STATE_SEARCH_PARAM_KEY = "orderState" as const;
 
@@ -8,10 +8,10 @@ const OrderMenuState = {
   SERVIVE: "servive",
 } as const;
 
-const orderStateToMenu = {
-  [OrderMenuState.SUMMARY]: <SummaryMenu />,
-  [OrderMenuState.SERVIVE]: <ServiveMenu />,
-} as const;
+// const orderStateToMenu = {
+// [OrderMenuState.SUMMARY]: <SummaryMenu />,
+// [OrderMenuState.SERVIVE]: <ServiveMenu />,
+// } as const;
 
 const EMPTY_MAP_LOCATION: MapLocation = {
   latitude: "",
@@ -46,7 +46,7 @@ const formContentAnimationVariants = {
 } as const;
 
 export {
-  orderStateToMenu,
+  // orderStateToMenu,
   ORDER_STATE_SEARCH_PARAM_KEY,
   OrderMenuState,
   EMPTY_MAP_LOCATION,
