@@ -1,7 +1,7 @@
 import { Provider } from "@nestjs/common";
 import { REDIS_CLIENT_KEY } from "./libs/constants.js";
 import { ConfigService } from "@nestjs/config";
-import { RedisClientType } from "@redis/client";
+import { RedisClientOptions, RedisClientType } from "@redis/client";
 import { createClient } from "redis";
 import { PinoLogger } from "nestjs-pino";
 
@@ -14,14 +14,22 @@ const redisProvider: Provider = {
   ): Promise<RedisClientType | never> => {
     const host = configService.get<string>("REDIS_HOST");
     const port = configService.get<number>("REDIS_PORT");
+    const mode = configService.get<string>("MODE");
 
-    const client = createClient({
-      socket: {
-        host,
-        port,
-        tls: false,
-      },
-    });
+    const clientOptions: RedisClientOptions =
+      mode === "development"
+        ? {
+            socket: {
+              host,
+              port,
+              tls: false,
+            },
+          }
+        : {
+            url: configService.get<string>("REDIS_URL"),
+          };
+
+    const client = createClient(clientOptions);
 
     client.on("error", (err) => logger.error(err));
     client.on("connect", () => logger.info("Connected to Redis"));
