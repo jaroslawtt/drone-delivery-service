@@ -1,9 +1,5 @@
 import { type MapLocation } from "~/packages/map/libs/types/types";
-import {
-  SendPackageMenu,
-  SummaryMenu,
-  ServiveMenu,
-} from "../components/components";
+import { SummaryMenu, ServiveMenu } from "../components/components";
 
 const ORDER_STATE_SEARCH_PARAM_KEY = "orderState" as const;
 
