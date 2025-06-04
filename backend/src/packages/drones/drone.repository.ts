@@ -14,13 +14,74 @@ import { Order } from "../orders/libs/types/order.type.js";
 @Injectable()
 class DroneRepository
   extends BaseRepository
-  implements Pick<IRepository, "findAll">
+  implements Pick<IRepository, "findAll" | "create" | "update">
 {
   public constructor(
     @Inject("DatabaseAsyncProvider")
     database: NodePgDatabase<typeof relations>,
   ) {
     super(database);
+  }
+
+  public async create(payload: DroneEntity): Promise<DroneEntity> {
+    const {
+      serialNumber,
+      model,
+      batteryCapacity,
+      maxSpeed,
+      maxAltitude,
+      weightCapacity,
+      batteryLevel,
+      status,
+    } = payload.toNewObject();
+
+    const transactionReturingData = await this.database.transaction(
+      async (tx) => {
+        const droneReturningData = await tx
+          .insert(relations.drones)
+          .values({
+            serialNumber,
+            status,
+            batteryLevel,
+          })
+          .returning({
+            id: relations.drones.id,
+            createdAt: relations.drones.createdAt,
+            updatedAt: relations.drones.updatedAt,
+          });
+
+        const droneId = droneReturningData.at(0)?.id;
+        if (!droneId) {
+          throw new Error("Drone not created");
+        }
+
+        await tx.insert(relations.droneDetails).values({
+          droneId,
+          model,
+          maxSpeed,
+          maxAltitude,
+          batteryCapacity,
+          weightCapacity,
+        });
+
+        return droneReturningData.at(0);
+      },
+    );
+
+    return DroneEntity.initialize({
+      id: transactionReturingData?.id!,
+      serialNumber,
+      status,
+      model,
+      maxSpeed,
+      maxAltitude,
+      batteryCapacity,
+      weightCapacity,
+      batteryLevel,
+      orderId: null,
+      createdAt: transactionReturingData?.createdAt!,
+      updatedAt: transactionReturingData?.updatedAt!,
+    });
   }
 
   public async findAll(): Promise<DroneEntity[]> {
@@ -147,17 +208,54 @@ class DroneRepository
   }
 
   public async update(payload: DroneEntity): Promise<DroneEntity> {
-    const { id, status, batteryLevel } = payload.toObject();
+    const { id, status } = payload.toObject();
+
+    const drone = await this.findById(id);
+
+    if (!drone) {
+      throw new Error("Drone not found");
+    }
+
+    const {
+      serialNumber,
+      status: droneStatus,
+      model,
+      batteryLevel,
+      orderId,
+      createdAt,
+      updatedAt,
+    } = drone.toObject();
+    const { maxSpeed, maxAltitude, batteryCapacity, weightCapacity } =
+      drone.details;
+
+    if (
+      status === DroneStatus.RESTRICTED &&
+      droneStatus === DroneStatus.ONLINE
+    ) {
+      throw new Error("Drone is online");
+    }
 
     await this.database
       .update(relations.drones)
       .set({
         status,
-        batteryLevel,
       })
       .where(eq(relations.drones.id, id));
 
-    return (await this.findById(id)) as DroneEntity;
+    return DroneEntity.initialize({
+      id,
+      serialNumber,
+      status,
+      model,
+      maxSpeed,
+      maxAltitude,
+      batteryCapacity,
+      weightCapacity,
+      batteryLevel,
+      orderId,
+      createdAt,
+      updatedAt,
+    });
   }
 
   public async getDroneOrderDestination(

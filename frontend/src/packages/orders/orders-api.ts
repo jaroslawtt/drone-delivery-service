@@ -7,6 +7,7 @@ import {
   type OrderCreateResponseDto,
 } from "./orders";
 import { OrdersApiPath } from "./libs/enums/enums";
+import { type OrderGetNumberOfOrdersProducedTodayResponse } from "./libs/types/types";
 
 type Constructor = {
   baseUrl: string;
@@ -19,10 +20,13 @@ class OrdersApi extends HttpApi {
   }
 
   public async getAllUserOrders(): Promise<OrderGetAllResponseDto> {
-    const response = await this.load(this.getFullEndpoint(OrdersApiPath.ROOT), {
-      method: "GET",
-      hasAuth: true,
-    });
+    const response = await this.load(
+      this.getFullEndpoint(OrdersApiPath.ROOT, {}),
+      {
+        method: "GET",
+        hasAuth: true,
+      },
+    );
 
     return (await response.json()).payload as OrderGetAllResponseDto;
   }
@@ -30,13 +34,29 @@ class OrdersApi extends HttpApi {
   public async createOrder(
     payload: OrderCreateRequestDto,
   ): Promise<OrderCreateResponseDto> {
-    const response = await this.load(this.getFullEndpoint(OrdersApiPath.ROOT), {
-      method: "POST",
-      payload: JSON.stringify(payload),
-      hasAuth: true,
-    });
+    const response = await this.load(
+      this.getFullEndpoint(OrdersApiPath.ROOT, {}),
+      {
+        method: "POST",
+        payload: JSON.stringify(payload),
+        hasAuth: true,
+      },
+    );
 
     return (await response.json()).payload as OrderCreateResponseDto;
+  }
+
+  public async numberOfProducedOrdersToday(): Promise<OrderGetNumberOfOrdersProducedTodayResponse> {
+    const response = await this.load(
+      this.getFullEndpoint(OrdersApiPath.PRODUCED_TODAY, {}),
+      {
+        method: "GET",
+        hasAuth: true,
+      },
+    );
+
+    return (await response.json())
+      .payload as OrderGetNumberOfOrdersProducedTodayResponse;
   }
 }
 

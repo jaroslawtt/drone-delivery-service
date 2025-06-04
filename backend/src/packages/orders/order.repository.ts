@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { eq, or } from "drizzle-orm";
+import { desc, eq, or, and, gte, lt, sql } from "drizzle-orm";
 import { type Order } from "./libs/types/types.js";
 import { OrderEntity } from "./order.entity.js";
 import { IRepository } from "~/libs/interfaces/repository.interface.js";
@@ -9,7 +9,7 @@ import { BaseRepository } from "~/libs/packages/repository/repository.package.js
 @Injectable()
 class OrderRepository
   extends BaseRepository
-  implements Omit<IRepository, "findAll" | "find">
+  implements Omit<IRepository, "find">
 {
   public async update(payload: OrderEntity): Promise<OrderEntity> {
     const { id, amount, status, weight, droneId } = payload.toObject();
@@ -85,6 +85,7 @@ class OrderRepository
         destination: true,
         entryPoint: true,
       },
+      orderBy: [desc(relations.orders.createdAt)],
     });
 
     return orders.map((order) =>
@@ -157,6 +158,51 @@ class OrderRepository
       createdAt: returnedOrderColumns!.createdAt!.toISOString(),
       updatedAt: returnedOrderColumns!.updatedAt!.toISOString(),
     });
+  }
+
+  public async findAll(): Promise<OrderEntity[]> {
+    const orders = await this.database.query.orders.findMany({
+      with: {
+        destination: true,
+        entryPoint: true,
+      },
+      orderBy: [desc(relations.orders.createdAt)],
+    });
+
+    return orders.map((order) =>
+      OrderEntity.initialize({
+        id: order.id,
+        clientId: order.clientId,
+        amount: order.amount,
+        status: order.status,
+        weight: order.weight,
+        destination: order.destination,
+        droneId: order.droneId,
+        entryPoint: order.entryPoint,
+        createdAt: order.createdAt!.toISOString(),
+        updatedAt: order.updatedAt!.toISOString(),
+      }),
+    );
+  }
+
+  public async producedOrdersToday(): Promise<number> {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(today.getUTCDate() + 1);
+
+    const result = await this.database
+      .select({ count: sql<number>`count(*)` })
+      .from(relations.orders)
+      .where(
+        and(
+          gte(relations.orders.createdAt, today),
+          lt(relations.orders.createdAt, tomorrow),
+        ),
+      );
+
+    return Number(result[0]?.count ?? 0);
   }
 
   public async findByDroneId(

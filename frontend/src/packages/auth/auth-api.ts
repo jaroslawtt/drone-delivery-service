@@ -24,7 +24,7 @@ class AuthApi extends HttpApi {
     payload: AuthSignInRequestDto,
   ): Promise<AuthSignInResponseDto> {
     const response = await this.load(
-      this.getFullEndpoint(AuthApiPath.SIGN_IN),
+      this.getFullEndpoint(AuthApiPath.SIGN_IN, {}),
       {
         method: "POST",
         payload: JSON.stringify(payload),
@@ -38,7 +38,7 @@ class AuthApi extends HttpApi {
     payload: AuthSignUpRequestDto,
   ): Promise<AuthSignInResponseDto> {
     const response = await this.load(
-      this.getFullEndpoint(AuthApiPath.SIGN_UP),
+      this.getFullEndpoint(AuthApiPath.SIGN_UP, {}),
       {
         method: "POST",
         payload: JSON.stringify(payload),
@@ -50,7 +50,7 @@ class AuthApi extends HttpApi {
 
   public async getCurrentUser(): Promise<AuthGetCurrentResponseDto> {
     const response = await this.load(
-      this.getFullEndpoint(AuthApiPath.CURRENT),
+      this.getFullEndpoint(AuthApiPath.CURRENT, {}),
       {
         method: "GET",
         hasAuth: true,
@@ -62,7 +62,7 @@ class AuthApi extends HttpApi {
 
   public async generateAccessToken(): Promise<AuthGenerateAccessResponseDto> {
     const response = await this.load(
-      this.getFullEndpoint(AuthApiPath.GENERATE_ACCESS),
+      this.getFullEndpoint(AuthApiPath.GENERATE_ACCESS, {}),
       {
         method: "GET",
         hasAuth: false,

@@ -36,7 +36,9 @@ function MenubarGroup({
 
 function MenubarPortal({
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
+}: React.ComponentProps<
+  typeof MenubarPrimitive.Portal & { className?: string }
+>) {
   return <MenubarPrimitive.Portal data-slot="menubar-portal" {...props} />;
 }
 
@@ -69,10 +71,13 @@ function MenubarContent({
   align = "start",
   alignOffset = -4,
   sideOffset = 8,
+  portalContainer,
   ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Content>) {
+}: React.ComponentProps<typeof MenubarPrimitive.Content> & {
+  portalContainer?: Element;
+}) {
   return (
-    <MenubarPortal>
+    <MenubarPortal container={portalContainer}>
       <MenubarPrimitive.Content
         data-slot="menubar-content"
         align={align}
@@ -124,7 +129,7 @@ function MenubarCheckboxItem({
         "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
-      checked={checked}
+      checked={Boolean(checked)}
       {...props}
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">

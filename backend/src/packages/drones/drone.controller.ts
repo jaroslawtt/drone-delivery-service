@@ -1,7 +1,27 @@
-import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from "@nestjs/common";
 import { ApiPath } from "~/libs/enums/enums.js";
-import { type DroneGetAllResponseDto } from "./libs/types/types.js";
+import {
+  DroneUpdateItemRequestDto,
+  DroneUpdateItemResponseDto,
+  type DroneCreateRequestDto,
+  type DroneCreateResponseDto,
+  type DroneGetAllResponseDto,
+} from "./libs/types/types.js";
 import { DroneService } from "./drone.service.js";
+import { BodyValidationSchema } from "~/libs/packages/validation/validation.js";
+import {
+  droneCreateItemValidationSchema,
+  droneUpdateItemValidationSchema,
+} from "./libs/validation-schemas/validation-schemas.js";
+import { DroneApiPath } from "./libs/enums/enums.js";
 
 @Controller(ApiPath.DRONES)
 class DroneController {
@@ -27,6 +47,27 @@ class DroneController {
     if (!drone) {
       throw new NotFoundException("Drone not found");
     }
+
+    return drone;
+  }
+
+  @Post()
+  @BodyValidationSchema(droneCreateItemValidationSchema)
+  public async create(
+    @Body() payload: DroneCreateRequestDto,
+  ): Promise<DroneCreateResponseDto> {
+    const drone = await this.droneService.create(payload);
+
+    return drone;
+  }
+
+  @Put(DroneApiPath.$DRONE_ID)
+  @BodyValidationSchema(droneUpdateItemValidationSchema)
+  public async update(
+    @Param("droneId") droneId: string,
+    @Body() payload: DroneUpdateItemRequestDto,
+  ): Promise<DroneUpdateItemResponseDto> {
+    const drone = await this.droneService.update(Number(droneId), payload);
 
     return drone;
   }

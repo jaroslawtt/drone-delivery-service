@@ -9,7 +9,6 @@ import {
 } from "./libs/types/types.js";
 import { MapRepository } from "./map.repository.js";
 import { OrderService } from "../orders/order.service.js";
-import { Order } from "../orders/libs/types/order.type.js";
 import { OrderStatus } from "../orders/libs/enums/enums.js";
 
 @Injectable()
@@ -87,8 +86,8 @@ class MapService {
           if (!order) {
             await this.droneService.update(drone.id, {
               status: DroneStatus.OFFLINE,
-              batteryLevel: drone.batteryLevel,
               serialNumber: drone.serialNumber,
+              model: drone.model,
             });
 
             continue;

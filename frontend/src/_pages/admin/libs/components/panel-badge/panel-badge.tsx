@@ -15,7 +15,7 @@ const PanelBadge: FC<Properties> = ({
   return (
     <div
       className={cn(
-        "flex flex-col gap-y-2 p-3 rounded-md min-w-[160px]",
+        "flex flex-col gap-y-2 p-3 rounded-md min-w-[120px]",
         className,
       )}
     >

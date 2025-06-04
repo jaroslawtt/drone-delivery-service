@@ -13,7 +13,8 @@ import {
   type OrderGetAllResponseDto,
   type OrderCreateRequestDto,
   type OrderCreateResponseDto,
-  OrderCalculateAmountRequestDto,
+  type OrderCalculateAmountRequestDto,
+  type OrderGetNumberOfOrdersProducedTodayResponse,
 } from "./libs/types/types.js";
 import {
   orderCalculateAmountValidationSchema,
@@ -23,7 +24,7 @@ import {
 import { OrderService } from "./order.service.js";
 import { BodyValidationSchema } from "~/libs/packages/validation/body-validation-schema.decorator.js";
 import { PathParamsValidationSchema } from "~/libs/packages/validation/path-params-validation-schema.js";
-
+import { OrdersApiPath } from "./libs/enums/enums.js";
 @Controller("/orders")
 class OrderController {
   private readonly orderService: OrderService;
@@ -80,6 +81,15 @@ class OrderController {
     @Body() orderCalculateAmountRequestDto: OrderCalculateAmountRequestDto,
   ) {
     return this.orderService.calculateAmount(orderCalculateAmountRequestDto);
+  }
+
+  @Get(OrdersApiPath.PRODUCED_TODAY)
+  public async numberOfProducedOrdersToday(): Promise<OrderGetNumberOfOrdersProducedTodayResponse> {
+    const number = await this.orderService.numberOfProducedOrdersToday();
+
+    return {
+      value: number,
+    };
   }
 }
 

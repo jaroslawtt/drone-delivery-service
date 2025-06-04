@@ -1,5 +1,5 @@
 "use client";
-import { Banknote, BanknoteArrowDown, CreditCard } from "lucide-react";
+import { BanknoteArrowDown, CreditCard } from "lucide-react";
 import { useState } from "react";
 import { Dialog } from "~/libs/components/components";
 import { PaymentMethod } from "./libs/components/components";

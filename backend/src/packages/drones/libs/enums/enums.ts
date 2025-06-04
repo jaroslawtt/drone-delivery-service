@@ -1,1 +1,1 @@
-export { DroneStatus } from "shared/build/index.js";
+export { DroneStatus, DroneApiPath } from "shared/build/index.js";

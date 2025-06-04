@@ -7,6 +7,7 @@ export {
   type OrderCreateResponseDto,
   type OrderCreateRequestDto,
   type OrderCalculateAmountRequestDto,
+  type OrderGetNumberOfOrdersProducedTodayResponse,
   OrderStatus,
   orderCreateValidationSchema,
   orderCalculateAmountValidationSchema,
@@ -35,10 +36,17 @@ export {
 } from "./packages/auth/auth.js";
 export {
   DroneStatus,
+  DroneApiPath,
   type DroneLocation,
   type DroneGetAllItemResonseDto,
   type DroneWithLocationGetAllItemResponseDto,
   type DroneGetAllResponseDto,
+  type DroneCreateRequestDto,
+  type DroneCreateResponseDto,
+  type DroneUpdateItemRequestDto,
+  type DroneUpdateItemResponseDto,
+  droneCreateItemValidationSchema,
+  droneUpdateItemValidationSchema,
 } from "./packages/drones/drones.js";
 export {
   type MapGetAllItemReponseDto,

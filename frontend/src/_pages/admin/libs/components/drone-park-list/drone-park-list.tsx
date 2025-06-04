@@ -4,6 +4,7 @@ import { FC, useState } from "react";
 import { DroneGetAllItemResonseDto } from "~/packages/drones/drones";
 import { DroneCard } from "../drone-card/drone-card";
 import { Button } from "~/libs/components/button/button";
+import { AddDroneMenu } from "../add-drone-menu/add-drone-menu";
 
 type Properties = {
   drones: DroneGetAllItemResonseDto[];
@@ -32,10 +33,7 @@ const DroneParkList: FC<Properties> = ({ drones }) => {
       <div className="flex flex-col gap-y-3">
         <div className="w-full flex justify-between items-center">
           <h3 className="text-nowrap font-semibold text-xl">Drone Park</h3>
-          <Button
-            className="self-end w-auto px-5 py-2 font-semibold"
-            label="+ Add Drone"
-          />
+          <AddDroneMenu />
         </div>
         <div className="w-full flex-1 min-h-0 grid grid-cols-1 gap-y-3 flex-shrink overflow-y-scroll">
           {currentDrones.map((drone) => (

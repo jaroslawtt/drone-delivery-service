@@ -7,6 +7,8 @@
   "scripts": {
     "prettify": "prettier --write \"**/*.{ts, js, json,md}\"",
     "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:shared": "cd shared && npm run build",
     "lint": "eslint \"**/*.{ts,tsx}\" --fix",
     "lint:type": "npm run lint:type --workspaces --if-present",
     "lint:js": "npm run lint:js --workspaces --if-present -- --max-warnings=0"

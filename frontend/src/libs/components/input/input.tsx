@@ -227,7 +227,7 @@ const Input = <T extends FieldValues>({
 
   return (
     <label className="relative overflow-hidden">
-      <span className="absolute left-[12px] text-[12px] leading-[24px] text-tertiary">
+      <span className="absolute left-[12px] text-[12px] leading-[24px] text-tertiary text-nowrap">
         {label}
       </span>
       <input

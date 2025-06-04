@@ -40,44 +40,18 @@ class HttpApi implements IHttpApi {
     this.path = path;
   }
 
-  protected getFullEndpoint(...segments: string[]): string;
   protected getFullEndpoint<T extends Record<string, string>>(
     ...parameters: [...string[], T]
-  ): string;
-  protected getFullEndpoint<T extends Record<string, string>>(
-    ...parameters: [...string[], T] | [...string[]]
   ): string {
-    const configureParams: [...string[], T] | Array<string> = [
-      this.baseUrl,
-      this.path,
-    ];
     const copiedParameters = [...parameters];
 
-    const lastParam =
-      copiedParameters.length > 0 ? copiedParameters.pop() : undefined;
-
-    const options =
-      typeof lastParam === "object" &&
-      lastParam !== null &&
-      !Array.isArray(lastParam)
-        ? (lastParam as T)
-        : undefined;
-
-    if (!options && lastParam) {
-      copiedParameters.push(lastParam as string);
-
-      return configureString(
-        ...configureParams,
-        ...(copiedParameters as string[]),
-      );
-    }
+    const options = copiedParameters.pop() as T;
 
     return configureString(
-      ...([
-        ...configureParams,
-        ...copiedParameters,
-        ...(options ? [options] : []),
-      ] as [...string[], T]),
+      this.baseUrl,
+      this.path,
+      ...(copiedParameters as string[]),
+      options,
     );
   }
 
