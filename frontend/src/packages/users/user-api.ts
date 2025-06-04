@@ -20,7 +20,7 @@ class UserApi extends HttpApi {
 
   public async updatePassword(payload: UserUpdatePasswordDto): Promise<void> {
     return void (await this.load(
-      this.getFullEndpoint(UserApiPath.CHANGE_PASSWORD),
+      this.getFullEndpoint(UserApiPath.CHANGE_PASSWORD, {}),
       {
         method: "POST",
         payload: JSON.stringify(payload),
@@ -32,17 +32,20 @@ class UserApi extends HttpApi {
   public async updateUser(
     payload: UserUpdateRequestDto,
   ): Promise<UserUpdateResponseDto> {
-    const response = await this.load(this.getFullEndpoint(UserApiPath.ROOT), {
-      method: "PUT",
-      hasAuth: true,
-      payload: JSON.stringify(payload),
-    });
+    const response = await this.load(
+      this.getFullEndpoint(UserApiPath.ROOT, {}),
+      {
+        method: "PUT",
+        hasAuth: true,
+        payload: JSON.stringify(payload),
+      },
+    );
 
     return (await response.json()).payload as UserUpdateResponseDto;
   }
 
   public async deleteAccount(): Promise<void> {
-    return void (await this.load(this.getFullEndpoint(UserApiPath.ROOT), {
+    return void (await this.load(this.getFullEndpoint(UserApiPath.ROOT, {}), {
       method: "DELETE",
       hasAuth: true,
       payload: JSON.stringify({}),
