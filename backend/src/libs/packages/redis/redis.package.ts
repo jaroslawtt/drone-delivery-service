@@ -26,7 +26,7 @@ const redisProvider: Provider = {
             },
           }
         : {
-            url: configService.get<string>("REDIS_URL"),
+            url: `${configService.get<string>("REDIS_URL")}`,
           };
 
     const client = createClient(clientOptions);
