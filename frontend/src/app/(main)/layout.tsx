@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { FC, PropsWithChildren, useEffect } from "react";
+import { FC, PropsWithChildren, Suspense, useEffect } from "react";
 import { useAuthStore } from "~/stores/auth/auth";
 
 type Properties = PropsWithChildren;
@@ -15,7 +15,7 @@ const MainLayout: FC<Properties> = ({ children }: Properties) => {
     }
   }, [user, router]);
 
-  return <>{children}</>;
+  return <Suspense>{children}</Suspense>;
 };
 
 export default MainLayout;
