@@ -1,11 +1,10 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import { Pool } from "pg";
 import { droneDetails } from "../../src/packages/drones/drone-details.schema.js";
 import { DroneStatus } from "../../src/packages/drones/libs/enums/enums.js";
 import { drones } from "../../src/packages/drones/drone.schema.js";
 import "dotenv/config";
 
-const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env["DATABASE_URL"],
 });

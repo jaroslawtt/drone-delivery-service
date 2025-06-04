@@ -1,0 +1,1 @@
+ALTER TYPE "public"."drone_status" ADD VALUE 'restricted';

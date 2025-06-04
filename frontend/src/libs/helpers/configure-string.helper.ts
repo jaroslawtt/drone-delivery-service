@@ -1,35 +1,20 @@
-function configureString(...segments: string[]): string;
-function configureString<T extends Record<string, string>>(
+const configureString = <
+  R extends string,
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(
   ...parameters: [...string[], T]
-): string;
-function configureString<T extends Record<string, string>>(
-  ...parameters: [...string[], T] | [...string[]]
-): string {
+): R => {
   const copiedArguments = [...parameters];
-  const lastParam =
-    copiedArguments.length > 0 ? copiedArguments.pop() : undefined;
-  const isObject =
-    lastParam !== undefined &&
-    typeof lastParam === "object" &&
-    !Array.isArray(lastParam);
 
-  const options = isObject ? (lastParam as T) : undefined;
-
-  if (!isObject && lastParam !== undefined) {
-    copiedArguments.push(lastParam as string);
-  }
+  const options = copiedArguments.pop() as T;
 
   let result = copiedArguments.join("");
 
-  if (!options) {
-    return result;
-  }
-
   for (const [key, value] of Object.entries(options)) {
-    result = result.replace(`:${key}`, value);
+    result = result.replace(`:${key}`, value as string);
   }
 
-  return result;
-}
+  return result as R;
+};
 
 export { configureString };

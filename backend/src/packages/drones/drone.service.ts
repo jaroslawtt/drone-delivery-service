@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { DroneRepository } from "./drone.repository.js";
-import { type Drone, type DroneUpdate } from "./libs/types/types.js";
+import {
+  DroneCreateRequestDto,
+  DroneUpdateItemRequestDto,
+  type Drone,
+} from "./libs/types/types.js";
 import { IService } from "~/libs/interfaces/interfaces.js";
 import { DroneStatus } from "./libs/enums/enums.js";
 import { type ValueOf } from "~/libs/types/types.js";
@@ -40,14 +44,17 @@ class DroneService implements Pick<IService, "findAll"> {
     return drones.map((drone) => drone.toObject());
   }
 
-  public async update(droneId: Drone["id"], payload: DroneUpdate) {
-    const { status, batteryLevel } = payload;
+  public async update(
+    droneId: Drone["id"],
+    payload: DroneUpdateItemRequestDto,
+  ) {
+    const { status } = payload;
 
     const drone = await this.droneRepository.update(
       DroneEntity.initialize({
         id: droneId,
         status,
-        batteryLevel,
+        batteryLevel: null,
         batteryCapacity: null,
         maxAltitude: null,
         maxSpeed: null,
@@ -60,9 +67,27 @@ class DroneService implements Pick<IService, "findAll"> {
       }),
     );
 
-    if (!drone) {
-      return null;
-    }
+    return drone.toObject();
+  }
+
+  public async create(payload: DroneCreateRequestDto) {
+    const { model, serialNumber } = payload;
+
+    const drone = await this.droneRepository.create(
+      DroneEntity.initializeNew({
+        model,
+        serialNumber,
+        status: DroneStatus.OFFLINE,
+        batteryLevel: 100,
+        batteryCapacity: "100",
+        maxSpeed: "100",
+        maxAltitude: "100",
+        weightCapacity: "100",
+        orderId: null,
+      }),
+    );
+
+    return drone.toObject();
   }
 
   public async getDroneOrderDestination(droneId: Drone["id"]) {

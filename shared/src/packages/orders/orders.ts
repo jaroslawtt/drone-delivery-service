@@ -5,6 +5,7 @@ export {
   type OrderCreateRequestDto,
   type OrderCreateResponseDto,
   type OrderCalculateAmountRequestDto,
+  type OrderGetNumberOfOrdersProducedTodayResponse,
 } from "./libs/types/types.js";
 export {
   orderCreateValidationSchema,

@@ -4,6 +4,7 @@ export {
   type OrderCreateRequestDto,
   type OrderCreateResponseDto,
   type OrderCalculateAmountRequestDto,
+  type OrderGetNumberOfOrdersProducedTodayResponse,
 } from "shared/build/index.js";
 
 export { type Order } from "./order.type.js";

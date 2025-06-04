@@ -2,6 +2,7 @@ import { configureString } from "~/libs/helpers/helpers";
 import { IHttp } from "../http/libs/interfaces/interfaces";
 import { IHttpApi } from "./interfaces/http-api.interface";
 import { HttpApiOptions, HttpApiResponse } from "./types/types";
+import { StorageKey } from "../storage/storage";
 
 type Constructor = {
   baseUrl: string;
@@ -20,9 +21,9 @@ class HttpApi implements IHttpApi {
     path: string,
     options: HttpApiOptions,
   ): Promise<HttpApiResponse> {
-    const { method, payload = null } = options;
+    const { method, payload = null, hasAuth = false } = options;
 
-    const headers = await this.getHeaders();
+    const headers = await this.getHeaders(hasAuth);
 
     const response = await this.http.load(path, {
       method,
@@ -39,48 +40,38 @@ class HttpApi implements IHttpApi {
     this.path = path;
   }
 
-  protected getFullEndpoint(...segments: string[]): string;
   protected getFullEndpoint<T extends Record<string, string>>(
     ...parameters: [...string[], T]
-  ): string;
-  protected getFullEndpoint<T extends Record<string, string>>(
-    ...parameters: [...string[], T] | [...string[]]
   ): string {
     const copiedParameters = [...parameters];
 
-    const lastParam =
-      copiedParameters.length > 0 ? copiedParameters.pop() : undefined;
-
-    const options =
-      typeof lastParam === "object" &&
-      lastParam !== null &&
-      !Array.isArray(lastParam)
-        ? (lastParam as T)
-        : undefined;
-
-    if (!options && lastParam) {
-      copiedParameters.push(lastParam as string);
-    }
+    const options = copiedParameters.pop() as T;
 
     return configureString(
       this.baseUrl,
       this.path,
-      ...copiedParameters,
+      ...(copiedParameters as string[]),
       options,
     );
   }
 
-  private async getHeaders(): Promise<Headers> {
+  private async getHeaders(hasAuth: boolean): Promise<Headers> {
     const headers = new Headers();
 
     headers.append("content-type", "application/json");
+
+    if (hasAuth) {
+      const token = window.localStorage.getItem(StorageKey.ACCESS_TOKEN);
+
+      headers.append("Authorization", `Bearer ${token ?? ""}`);
+    }
 
     return headers;
   }
 
   private async checkResponse(response: Response): Promise<Response | never> {
     if (!response.ok) {
-      console.log(response);
+      throw response.status;
     }
 
     return response;

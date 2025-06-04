@@ -73,8 +73,8 @@ class OrderService implements Omit<IService, "findAll" | "find"> {
     if (droneToDeliverOrder!.status === DroneStatus.OFFLINE) {
       await this.droneService.update(droneToDeliverOrder!.id, {
         status: DroneStatus.ONLINE,
-        batteryLevel: droneToDeliverOrder!.batteryLevel,
         serialNumber: droneToDeliverOrder!.serialNumber,
+        model: droneToDeliverOrder!.model,
       });
     }
 
@@ -118,6 +118,10 @@ class OrderService implements Omit<IService, "findAll" | "find"> {
       destination: order.destinationData,
       entryPoint: order.entryPointData,
     };
+  }
+
+  public async numberOfProducedOrdersToday(): Promise<number> {
+    return this.orderRepository.producedOrdersToday();
   }
 
   public async delete(orderId: Order["id"]) {

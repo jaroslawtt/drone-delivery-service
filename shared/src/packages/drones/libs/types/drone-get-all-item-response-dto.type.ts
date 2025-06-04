@@ -1,12 +1,11 @@
 import { ValueOf } from "~/libs/types/types";
+import { DroneStatus } from "../enums/drone-status.enum.js";
 
 type DroneGetAllItemResonseDto = {
   id: number;
   serialNumber: string;
-  status: ValueOf<{
-    readonly OFFLINE: "offline";
-    readonly ONLINE: "online";
-  }>;
+  model: string;
+  status: ValueOf<typeof DroneStatus>;
   batteryLevel: number;
   createdAt: Date | null;
   updatedAt: Date | null;
