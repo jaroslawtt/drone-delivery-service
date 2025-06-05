@@ -79,10 +79,10 @@ const bootstrap = async () => {
   app.useGlobalInterceptors(new ResponseMappingInterceptor());
 
   const config = new DocumentBuilder()
-    .setTitle("SkyPorter API")
-    .setDescription("The SkyPorter API description")
+    .setTitle("Drone Delivery Service API")
+    .setDescription("The Drone Delivery Service API description")
     .setVersion("1.0")
-    .addTag("SkyPorter")
+    .addTag("Drone Delivery Service")
     .addTag("Drones")
     .addTag("Delivery Service")
     .addBearerAuth()
